@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2015", "dom"
+    ],
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "noImplicitAny": false,
+    "jsx": "react",
+    "experimentalDecorators": true
+  },
+  "include": [
+    "./lib/**/*.tsx",
+    "./lib/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "typings"
+  ]
+}
