@@ -19,8 +19,10 @@
   "devDependencies": {
     "@types/react": "^16.8.8",
     "react": "^16.8.4",
-    "reactstrap": "^7.1.0",
     "typescript": "^3.3.3333"
+  },
+  "peerDependencies": {
+    "react": "^16.8.4"
   },
   "dependencies": {
     "wowza-webrtc-client": "0.0.1"

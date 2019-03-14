@@ -10,6 +10,7 @@ interface Props extends IPlayerProps {
     autoPlay: boolean;
     rotate: 'none' | 'ccw' | 'cw' | 'flip';
     config: WebRTCConfiguration;
+    showUnmuteButton: boolean;
 }
 interface State {
     loadCount: number;

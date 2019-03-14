@@ -26,7 +26,6 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var wowza_webrtc_client_1 = require("wowza-webrtc-client");
-var reactstrap_1 = require("reactstrap");
 var WebRTCPlayer = /** @class */ (function (_super) {
     __extends(WebRTCPlayer, _super);
     function WebRTCPlayer(props) {
@@ -163,16 +162,17 @@ var WebRTCPlayer = /** @class */ (function (_super) {
         var _this = this;
         return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player" },
             React.createElement("video", { ref: "video", playsInline: true, autoPlay: true, className: this.props.rotate, style: this.state.videoStyle }),
-            this.playerInterface && this.state.isMuted &&
+            this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
                 React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: function () { return _this.playerInterface && (_this.playerInterface.isMuted = false); } },
-                    React.createElement(reactstrap_1.Button, { color: "danger" },
+                    React.createElement("button", { className: "btn btn-danger" },
                         React.createElement("i", { className: "fas fa-volume-mute" }),
                         " TAP TO UNMUTE")));
     };
     WebRTCPlayer.defaultProps = {
         disableAudio: false,
         autoPlay: true,
-        rotate: 'none'
+        rotate: 'none',
+        showUnmuteButton: true
     };
     return WebRTCPlayer;
 }(React.Component));

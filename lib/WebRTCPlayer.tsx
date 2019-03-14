@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { WebRTCPlayer as Player, WebRTCConfiguration } from 'wowza-webrtc-client'
-import { Button } from 'reactstrap'
 import { IPlayerProps, IPlayer } from './IPlayer'
 
 interface Props extends IPlayerProps {
@@ -12,6 +11,7 @@ interface Props extends IPlayerProps {
   autoPlay: boolean
   rotate: 'none'|'ccw'|'cw'|'flip' 
   config: WebRTCConfiguration
+  showUnmuteButton: boolean
 }
 
 interface State {
@@ -25,7 +25,8 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
   public static defaultProps: Partial<Props> = {
     disableAudio: false,
     autoPlay: true,
-    rotate: 'none'
+    rotate: 'none',
+    showUnmuteButton: true
   }
 
   public get isPlaying(): boolean {
@@ -127,6 +128,13 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
           outState.top = (frameSize.height - actualVideoSize.height) / 2
           outState.left = (frameSize.width - actualVideoSize.width) / 2
         }
+        if (this.props.rotate === 'ccw') {
+          outState.transform = 'rotate(-90deg)'
+        } else if (this.props.rotate === 'cw') {
+          outState.transform = 'rotate(90deg)'
+        } else if (this.props.rotate === 'flip') {
+          outState.transform = 'rotate(180deg)'
+        }
         this.setState({
           videoStyle: outState
         })
@@ -177,9 +185,9 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
         style={this.state.videoStyle}
         />
       {
-        this.playerInterface && this.state.isMuted &&
+        this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
         <div className="unmute-blocker d-flex justify-content-center align-items-center" onClick={() => this.playerInterface && (this.playerInterface.isMuted = false) }>
-          <Button color="danger"><i className="fas fa-volume-mute"></i> TAP TO UNMUTE</Button>
+          <button className="btn btn-danger"><i className="fas fa-volume-mute"></i> TAP TO UNMUTE</button>
         </div>
       }
     </div>
