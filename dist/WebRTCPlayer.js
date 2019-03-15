@@ -123,6 +123,15 @@ var WebRTCPlayer = /** @class */ (function (_super) {
                     outState.top = (frameSize.height - actualVideoSize.height) / 2;
                     outState.left = (frameSize.width - actualVideoSize.width) / 2;
                 }
+                if (_this.props.rotate === 'ccw') {
+                    outState.transform = 'rotate(-90deg)';
+                }
+                else if (_this.props.rotate === 'cw') {
+                    outState.transform = 'rotate(90deg)';
+                }
+                else if (_this.props.rotate === 'flip') {
+                    outState.transform = 'rotate(180deg)';
+                }
                 _this.setState({
                     videoStyle: outState
                 });
