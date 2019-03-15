@@ -12,11 +12,15 @@ interface Props extends IPlayerProps {
   rotate: 'none'|'ccw'|'cw'|'flip' 
   config: WebRTCConfiguration
   showUnmuteButton: boolean
+  showErrorOverlay: boolean
+  className: string
 }
 
 interface State {
   loadCount: number
   isMuted?: boolean
+  isPlaying: boolean
+  error?: Error
   videoStyle: React.CSSProperties
 }
 
@@ -26,7 +30,9 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
     disableAudio: false,
     autoPlay: true,
     rotate: 'none',
-    showUnmuteButton: true
+    showUnmuteButton: true,
+    showErrorOverlay: true,
+    className: ''
   }
 
   public get isPlaying(): boolean {
@@ -49,6 +55,7 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
     super(props)
     this.state = {
       loadCount: 0,
+      isPlaying: false,
       videoStyle: {
         width: '100%',
         height: '100%'
@@ -154,7 +161,7 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
   private _initPlayer(autoPlay: boolean) {
     // Create a new instance
     this.playerInterface = new Player(this.props.config, this.videoElement, ({ isMuted, isPlaying, error }) => {
-      this.setState({ isMuted })
+      this.setState({ isMuted, isPlaying, error })
       this.props.onPlayerStateChanged && this.props.onPlayerStateChanged({ isMuted, isPlaying, error })
       this.resizeHandler && this.resizeHandler()
     })
@@ -179,7 +186,7 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
     return <div id={ this.props.id } 
         ref="frame" 
         style={{ ...this.props.style }}
-        className="webrtc-player">
+        className={`webrtc-player ${this.props.className}`}>
       <video ref="video" playsInline autoPlay
         className={this.props.rotate} 
         style={this.state.videoStyle}
@@ -188,6 +195,12 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
         this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
         <div className="unmute-blocker d-flex justify-content-center align-items-center" onClick={() => this.playerInterface && (this.playerInterface.isMuted = false) }>
           <button className="btn btn-danger"><i className="fas fa-volume-mute"></i> TAP TO UNMUTE</button>
+        </div>
+      }
+      {
+        this.props.showErrorOverlay && this.state.error &&
+        <div className="unmute-blocker d-flex justify-content-center align-items-center">
+          <span className="text-danger">{`${this.state.error.message}`}</span>
         </div>
       }
     </div>

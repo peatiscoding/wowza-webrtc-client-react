@@ -32,6 +32,7 @@ var WebRTCPlayer = /** @class */ (function (_super) {
         var _this = _super.call(this, props) || this;
         _this.state = {
             loadCount: 0,
+            isPlaying: false,
             videoStyle: {
                 width: '100%',
                 height: '100%'
@@ -149,7 +150,7 @@ var WebRTCPlayer = /** @class */ (function (_super) {
         // Create a new instance
         this.playerInterface = new wowza_webrtc_client_1.WebRTCPlayer(this.props.config, this.videoElement, function (_a) {
             var isMuted = _a.isMuted, isPlaying = _a.isPlaying, error = _a.error;
-            _this.setState({ isMuted: isMuted });
+            _this.setState({ isMuted: isMuted, isPlaying: isPlaying, error: error });
             _this.props.onPlayerStateChanged && _this.props.onPlayerStateChanged({ isMuted: isMuted, isPlaying: isPlaying, error: error });
             _this.resizeHandler && _this.resizeHandler();
         });
@@ -169,19 +170,24 @@ var WebRTCPlayer = /** @class */ (function (_super) {
     };
     WebRTCPlayer.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player" },
+        return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player " + this.props.className },
             React.createElement("video", { ref: "video", playsInline: true, autoPlay: true, className: this.props.rotate, style: this.state.videoStyle }),
             this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
                 React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: function () { return _this.playerInterface && (_this.playerInterface.isMuted = false); } },
                     React.createElement("button", { className: "btn btn-danger" },
                         React.createElement("i", { className: "fas fa-volume-mute" }),
-                        " TAP TO UNMUTE")));
+                        " TAP TO UNMUTE")),
+            this.props.showErrorOverlay && this.state.error &&
+                React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center" },
+                    React.createElement("span", { className: "text-danger" }, "" + this.state.error.message)));
     };
     WebRTCPlayer.defaultProps = {
         disableAudio: false,
         autoPlay: true,
         rotate: 'none',
-        showUnmuteButton: true
+        showUnmuteButton: true,
+        showErrorOverlay: true,
+        className: ''
     };
     return WebRTCPlayer;
 }(React.Component));

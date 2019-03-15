@@ -98,7 +98,9 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
 
   render() {
     return (
-      <video className={`webrtc-publisher ${this.props.className} ${this.state.isCameraReady ? '' : 'disabled'}`}
+      <video 
+        id={this.props.id}
+        className={`webrtc-publisher ${this.props.className} ${this.state.isCameraReady ? '' : 'disabled'}`}
         ref="localVideo"
         playsInline={true}
         muted={true}

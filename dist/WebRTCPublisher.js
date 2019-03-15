@@ -146,7 +146,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         });
     };
     WebRTCPublisher.prototype.render = function () {
-        return (React.createElement("video", { className: "webrtc-publisher " + this.props.className + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: "localVideo", playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
+        return (React.createElement("video", { id: this.props.id, className: "webrtc-publisher " + this.props.className + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: "localVideo", playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
     };
     WebRTCPublisher.defaultProps = {
         trace: true,

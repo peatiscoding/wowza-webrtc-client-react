@@ -11,10 +11,14 @@ interface Props extends IPlayerProps {
     rotate: 'none' | 'ccw' | 'cw' | 'flip';
     config: WebRTCConfiguration;
     showUnmuteButton: boolean;
+    showErrorOverlay: boolean;
+    className: string;
 }
 interface State {
     loadCount: number;
     isMuted?: boolean;
+    isPlaying: boolean;
+    error?: Error;
     videoStyle: React.CSSProperties;
 }
 export declare class WebRTCPlayer extends React.Component<Props, State> implements IPlayer {
