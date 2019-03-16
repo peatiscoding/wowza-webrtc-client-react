@@ -9,7 +9,8 @@ interface Props extends IPlayerProps {
   videoRatio: number
   disableAudio: boolean
   autoPlay: boolean
-  rotate: 'none'|'ccw'|'cw'|'flip' 
+  rotate: 'none'|'ccw'|'cw'|'flip'
+  sizing: 'cover'|'contain'
   config: WebRTCConfiguration
   showUnmuteButton: boolean
   showErrorOverlay: boolean
@@ -32,7 +33,8 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
     rotate: 'none',
     showUnmuteButton: true,
     showErrorOverlay: true,
-    className: ''
+    className: '',
+    sizing: 'contain'
   }
 
   public get isPlaying(): boolean {
@@ -96,10 +98,13 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
         }
         const frameAspectRatio = frameSize.width / frameSize.height
         let actualVideoSize: { width: number, height: number } = { width: 0, height: 0 }
-        console.log('Input (v, f) = ratios[', videoAspectRatio, frameAspectRatio, '] frame[', videoSize, frameSize, ']')
-        if (videoAspectRatio > frameAspectRatio) {
+        console.log(`Input (s=${this.props.sizing}, v, f) = ratios[`, videoAspectRatio, frameAspectRatio, '] frame[', videoSize, frameSize, ']')
+
+        // width dominate is based on given associated sizing option.
+        if (this.props.sizing === 'contain' && videoAspectRatio > frameAspectRatio
+          || this.props.sizing === 'cover' && videoAspectRatio < frameAspectRatio) {
           // width dominate
-          console.log('Width dominate ...', videoAspectRatio, frameAspectRatio)
+          console.log(`Width dominate ...`, videoAspectRatio, frameAspectRatio)
           actualVideoSize = {
             width: frameSize.width,
             height: frameSize.width / videoAspectRatio
@@ -112,7 +117,7 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
           }
         } else {
           // height dominate
-          console.log('Height dominate ...', videoAspectRatio, frameAspectRatio)
+          console.log(`Height dominate ...`, videoAspectRatio, frameAspectRatio)
           actualVideoSize = {
             width: frameSize.height * videoAspectRatio,
             height: frameSize.height
@@ -186,7 +191,7 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
     return <div id={ this.props.id } 
         ref="frame" 
         style={{ ...this.props.style }}
-        className={`webrtc-player ${this.props.className}`}>
+        className={`webrtc-player ${this.props.sizing} ${this.props.className}`}>
       <video ref="video" playsInline autoPlay
         className={this.props.rotate} 
         style={this.state.videoStyle}

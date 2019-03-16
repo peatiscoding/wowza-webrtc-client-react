@@ -60,7 +60,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         // States declaration
         // - No states is required at this point.
         _this.state = {
-            isCameraReady: false
+            isCameraReady: false,
+            isPreviewing: false
         };
         // so `statusInvalidated` can be called without bindings.
         _this.statusInvalidated = _this.statusInvalidated.bind(_this);
@@ -70,7 +71,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
     }
     Object.defineProperty(WebRTCPublisher.prototype, "isPreviewEnabled", {
         get: function () {
-            return this.handler.isPreviewEnabled;
+            return this.state.isPreviewing;
         },
         enumerable: true,
         configurable: true
@@ -109,6 +110,9 @@ var WebRTCPublisher = /** @class */ (function (_super) {
     };
     WebRTCPublisher.prototype.disconnect = function () {
         this.handler.disconnect();
+        if (this.isPreviewEnabled && this.props.autoPreview) {
+            this.handler.detachUserMedia();
+        }
     };
     Object.defineProperty(WebRTCPublisher.prototype, "_localVideoRef", {
         get: function () {
@@ -134,7 +138,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
     WebRTCPublisher.prototype.statusInvalidated = function () {
         // Update local states
         this.setState({
-            isCameraReady: !this.handler.isCameraMuted
+            isCameraReady: !this.handler.isCameraMuted,
+            isPreviewing: this.handler.isPreviewEnabled
         });
         // dispatch update to exterior state handler
         this.props.onVideoStateChanged && this.props.onVideoStateChanged({
@@ -146,7 +151,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         });
     };
     WebRTCPublisher.prototype.render = function () {
-        return (React.createElement("video", { id: this.props.id, className: "webrtc-publisher " + this.props.className + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: "localVideo", playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
+        return (React.createElement("video", { id: this.props.id, className: "webrtc-publisher " + this.props.className + " " + (this.state.isPreviewing ? 'previewing' : '') + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: "localVideo", playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
     };
     WebRTCPublisher.defaultProps = {
         trace: true,

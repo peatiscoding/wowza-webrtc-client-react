@@ -9,6 +9,7 @@ interface Props extends IPlayerProps {
     disableAudio: boolean;
     autoPlay: boolean;
     rotate: 'none' | 'ccw' | 'cw' | 'flip';
+    sizing: 'cover' | 'contain';
     config: WebRTCConfiguration;
     showUnmuteButton: boolean;
     showErrorOverlay: boolean;

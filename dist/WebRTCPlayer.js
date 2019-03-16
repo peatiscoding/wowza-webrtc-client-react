@@ -94,10 +94,12 @@ var WebRTCPlayer = /** @class */ (function (_super) {
                 }
                 var frameAspectRatio = frameSize.width / frameSize.height;
                 var actualVideoSize = { width: 0, height: 0 };
-                console.log('Input (v, f) = ratios[', videoAspectRatio, frameAspectRatio, '] frame[', videoSize, frameSize, ']');
-                if (videoAspectRatio > frameAspectRatio) {
+                console.log("Input (s=" + _this.props.sizing + ", v, f) = ratios[", videoAspectRatio, frameAspectRatio, '] frame[', videoSize, frameSize, ']');
+                // width dominate is based on given associated sizing option.
+                if (_this.props.sizing === 'contain' && videoAspectRatio > frameAspectRatio
+                    || _this.props.sizing === 'cover' && videoAspectRatio < frameAspectRatio) {
                     // width dominate
-                    console.log('Width dominate ...', videoAspectRatio, frameAspectRatio);
+                    console.log("Width dominate ...", videoAspectRatio, frameAspectRatio);
                     actualVideoSize = {
                         width: frameSize.width,
                         height: frameSize.width / videoAspectRatio
@@ -106,7 +108,7 @@ var WebRTCPlayer = /** @class */ (function (_super) {
                 }
                 else {
                     // height dominate
-                    console.log('Height dominate ...', videoAspectRatio, frameAspectRatio);
+                    console.log("Height dominate ...", videoAspectRatio, frameAspectRatio);
                     actualVideoSize = {
                         width: frameSize.height * videoAspectRatio,
                         height: frameSize.height
@@ -170,7 +172,7 @@ var WebRTCPlayer = /** @class */ (function (_super) {
     };
     WebRTCPlayer.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player " + this.props.className },
+        return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player " + this.props.sizing + " " + this.props.className },
             React.createElement("video", { ref: "video", playsInline: true, autoPlay: true, className: this.props.rotate, style: this.state.videoStyle }),
             this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
                 React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: function () { return _this.playerInterface && (_this.playerInterface.isMuted = false); } },
@@ -187,7 +189,8 @@ var WebRTCPlayer = /** @class */ (function (_super) {
         rotate: 'none',
         showUnmuteButton: true,
         showErrorOverlay: true,
-        className: ''
+        className: '',
+        sizing: 'contain'
     };
     return WebRTCPlayer;
 }(React.Component));

@@ -12,6 +12,7 @@ interface Props extends IPublisherProps {
 }
 interface State {
     isCameraReady: boolean;
+    isPreviewing: boolean;
 }
 export declare class WebRTCPublisher extends React.Component<Props, State> implements IPublisher {
     static defaultProps: Partial<Props>;

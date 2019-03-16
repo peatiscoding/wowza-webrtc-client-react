@@ -8,12 +8,13 @@ interface Props extends IPublisherProps {
   trace?: boolean                   // Enable Logs in Console?
   streamName: string                // Publishing stream name
   className?: string
-  autoPreview: boolean
+  autoPreview: boolean              // start preview when tryToConnect(), stop preview on disconnect()
   config: WebRTCConfiguration
 }
 
 interface State {
   isCameraReady: boolean
+  isPreviewing: boolean
 }
 
 export class WebRTCPublisher extends React.Component<Props, State> implements IPublisher {
@@ -26,7 +27,7 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
   private handler!: PublisherHandler
 
   public get isPreviewEnabled(): boolean {
-    return this.handler.isPreviewEnabled
+    return this.state.isPreviewing
   }
 
   public stopPreview() {
@@ -46,6 +47,9 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
 
   public disconnect() {
     this.handler.disconnect()
+    if (this.isPreviewEnabled && this.props.autoPreview) {
+      this.handler.detachUserMedia()
+    }
   }
 
   private get _localVideoRef(): HTMLVideoElement {
@@ -60,7 +64,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     // States declaration
     // - No states is required at this point.
     this.state = {
-      isCameraReady: false
+      isCameraReady: false,
+      isPreviewing: false
     }
 
     // so `statusInvalidated` can be called without bindings.
@@ -84,7 +89,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
   private statusInvalidated() {
     // Update local states
     this.setState({
-      isCameraReady: !this.handler.isCameraMuted
+      isCameraReady: !this.handler.isCameraMuted,
+      isPreviewing: this.handler.isPreviewEnabled
     })
     // dispatch update to exterior state handler
     this.props.onVideoStateChanged && this.props.onVideoStateChanged({
@@ -100,7 +106,7 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     return (
       <video 
         id={this.props.id}
-        className={`webrtc-publisher ${this.props.className} ${this.state.isCameraReady ? '' : 'disabled'}`}
+        className={`webrtc-publisher ${this.props.className} ${this.state.isPreviewing ? 'previewing': '' } ${this.state.isCameraReady ? '' : 'disabled'}`}
         ref="localVideo"
         playsInline={true}
         muted={true}
