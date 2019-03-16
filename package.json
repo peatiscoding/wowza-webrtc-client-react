@@ -1,6 +1,6 @@
 {
   "name": "wowza-webrtc-client-react",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "WoWza WebRTC Player/Client (React Component).",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
