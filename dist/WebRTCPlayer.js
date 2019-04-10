@@ -174,11 +174,13 @@ var WebRTCPlayer = /** @class */ (function (_super) {
         var _this = this;
         return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player " + this.props.sizing + " " + this.props.className },
             React.createElement("video", { ref: "video", playsInline: true, autoPlay: true, className: this.props.rotate, style: this.state.videoStyle }),
-            this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
+            this.playerInterface && this.state.isMuted &&
                 React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: function () { return _this.playerInterface && (_this.playerInterface.isMuted = false); } },
-                    React.createElement("button", { className: "btn btn-danger" },
-                        React.createElement("i", { className: "fas fa-volume-mute" }),
-                        " TAP TO UNMUTE")),
+                    this.props.children,
+                    this.props.showUnmuteButton &&
+                        React.createElement("button", { className: "btn btn-danger" },
+                            React.createElement("i", { className: "fas fa-volume-mute" }),
+                            " TAP TO UNMUTE")),
             this.props.showErrorOverlay && this.state.error &&
                 React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center" },
                     React.createElement("span", { className: "text-danger" }, "" + this.state.error.message)));
