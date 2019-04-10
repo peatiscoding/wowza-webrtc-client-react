@@ -197,9 +197,13 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
         style={this.state.videoStyle}
         />
       {
-        this.props.showUnmuteButton && this.playerInterface && this.state.isMuted &&
+        this.playerInterface && this.state.isMuted &&
         <div className="unmute-blocker d-flex justify-content-center align-items-center" onClick={() => this.playerInterface && (this.playerInterface.isMuted = false) }>
-          <button className="btn btn-danger"><i className="fas fa-volume-mute"></i> TAP TO UNMUTE</button>
+          { this.props.children }
+          {
+            this.props.showUnmuteButton && 
+            <button className="btn btn-danger"><i className="fas fa-volume-mute"></i> TAP TO UNMUTE</button>
+          }
         </div>
       }
       {
