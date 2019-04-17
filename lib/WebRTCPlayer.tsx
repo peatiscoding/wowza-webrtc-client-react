@@ -207,9 +207,12 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
         </div>
       }
       {
-        this.props.showErrorOverlay && this.state.error &&
+        this.state.error &&
         <div className="unmute-blocker d-flex justify-content-center align-items-center">
-          <span className="text-danger">{`${this.state.error.message}`}</span>
+          {
+            this.props.showErrorOverlay &&
+            <p className="text-danger text-center">{`${this.state.error.message}`}<br/>Tap to retry.</p>
+          }
         </div>
       }
     </div>
