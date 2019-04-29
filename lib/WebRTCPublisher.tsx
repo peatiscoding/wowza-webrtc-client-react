@@ -1,8 +1,23 @@
 import * as React from 'react'
 import { WebRTCConfiguration, WebRTCPublisher as PublisherHandler } from 'wowza-webrtc-client'
-import { IPublisher, IPublisherProps } from './IPublisher'
+import { IPublisher, WebRTCVideoStateChanged, CameraSource } from './IPublisher'
 
-interface Props extends IPublisherProps {
+const cameraSourceToConstraints = (src: CameraSource): MediaStreamConstraints => {
+  return {
+    audio: true,
+    video: src === 'any' ? true : { facingMode: { exact: src }}
+  }
+}
+
+const constraintsToCameraSource = (from: MediaStreamConstraints): CameraSource => {
+  if (from.video === true) {
+    return 'any'
+  }
+  const json = JSON.stringify(from.video)
+  return /environment/.test(json) ? 'environment' : 'user'
+}
+
+interface Props {
   id: string,                       // Html DOM's id
   style?: React.CSSProperties,      // Html CSS Properties
   trace?: boolean                   // Enable Logs in Console?
@@ -10,6 +25,8 @@ interface Props extends IPublisherProps {
   className?: string
   autoPreview: boolean              // start preview when tryToConnect(), stop preview on disconnect()
   config: WebRTCConfiguration
+  usingCamera: CameraSource
+  onVideoStateChanged?: WebRTCVideoStateChanged
 }
 
 interface State {
@@ -21,8 +38,11 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
 
   public static defaultProps: Partial<Props> = {
     trace: true,
-    autoPreview: true
+    autoPreview: true,
+    usingCamera: 'any'
   }
+
+  private _localVideoRef = React.createRef<HTMLVideoElement>()
 
   private handler!: PublisherHandler
 
@@ -35,12 +55,14 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
   }
 
   public async startPreview() {
-    await this.handler.attachUserMedia(this._localVideoRef)
+    if (this.videoElement) {
+      await this.handler.attachUserMedia(this.videoElement)
+    }
   }
 
   public async tryToConnect(): Promise<void> {
-    if (!this.isPreviewEnabled) {
-      await this.handler.attachUserMedia(this._localVideoRef)
+    if (!this.isPreviewEnabled && this.videoElement) {
+      await this.handler.attachUserMedia(this.videoElement)
     }
     this.handler.connect(this.props.streamName)
   }
@@ -52,8 +74,16 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     }
   }
 
-  private get _localVideoRef(): HTMLVideoElement {
-    return (this.refs as any).localVideo
+  public switchStream(cameraSource: CameraSource) {
+    this.handler.switchStream({
+      audio: true,
+      video: { facingMode: { exact: cameraSource } }
+    })
+    this.statusInvalidated()
+  }
+
+  private get videoElement(): HTMLVideoElement|undefined {
+    return this._localVideoRef.current || undefined
   }
 
   constructor(props: Props) {
@@ -72,13 +102,17 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     this.statusInvalidated = this.statusInvalidated.bind(this)
 
     // Create WebProducer object.
-    this.handler = new PublisherHandler(this.props.config, this.statusInvalidated)
+    this.handler = new PublisherHandler(
+      this.props.config,
+      cameraSourceToConstraints(props.usingCamera),
+      this.statusInvalidated
+    )
   }
 
   async componentDidMount() {
     // localVideo is now ready (as it is mounted)
-    if (this.state.isCameraReady && this.props.autoPreview) {
-      this.handler.attachUserMedia(this._localVideoRef)
+    if (this.state.isCameraReady && this.props.autoPreview && this.videoElement) {
+      this.handler.attachUserMedia(this.videoElement)
     }
   }
 
@@ -98,7 +132,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
       isHolding: this.handler.isHolding,
       isPublishing: this.handler.isPublishing,
       isPreviewEnabled: this.isPreviewEnabled,
-      publisherError: this.handler.lastError
+      publisherError: this.handler.lastError,
+      usingCamera: constraintsToCameraSource(this.handler.streamSourceConstraints)
     })
   }
 
@@ -107,7 +142,7 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
       <video 
         id={this.props.id}
         className={`webrtc-publisher ${this.props.className} ${this.state.isPreviewing ? 'previewing': '' } ${this.state.isCameraReady ? '' : 'disabled'}`}
-        ref="localVideo"
+        ref={this._localVideoRef}
         playsInline={true}
         muted={true}
         controls={false}

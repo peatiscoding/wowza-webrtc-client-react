@@ -41,17 +41,21 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
     return this.playerInterface && this.playerInterface.isPlaying || false
   }
 
-  private get videoElement(): HTMLVideoElement {
-    return (this.refs as any).video
+  private get videoElement(): HTMLVideoElement|undefined {
+    return this._refVideo.current || undefined
   }
 
-  private get frameElement(): HTMLDivElement {
-    return (this.refs as any).frame
+  private get frameElement(): HTMLDivElement|undefined {
+    return this._refFrame.current || undefined
   }
 
   private playerInterface?: Player
 
   private resizeHandler!: () => void
+
+  private _refFrame = React.createRef<HTMLDivElement>()
+
+  private _refVideo = React.createRef<HTMLVideoElement>()
 
   constructor(props: Props) {
     super(props)
@@ -70,14 +74,17 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
 
     // register a resize handler.
     this.resizeHandler = () => {
+      const videoElement = this.videoElement
+      const frameElement = this.frameElement
+      if (!videoElement || !frameElement) { return }
       //
       const videoSize = {
-        width: this.videoElement.videoWidth,
-        height: this.videoElement.videoHeight
+        width: videoElement.videoWidth,
+        height: videoElement.videoHeight
       }
       let frameSize = {
-        width: this.frameElement.clientWidth,
-        height: this.frameElement.clientHeight
+        width: frameElement.clientWidth,
+        height: frameElement.clientHeight
       }
       if (!(videoSize.width > 0 && videoSize.height >0) || !frameSize) {
         console.log('Bailed on calculation size info is not valid')
@@ -164,6 +171,9 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
   }
 
   private _initPlayer(autoPlay: boolean) {
+    if (!this.videoElement) {
+      return
+    }
     // Create a new instance
     this.playerInterface = new Player(this.props.config, this.videoElement, ({ isMuted, isPlaying, error }) => {
       this.setState({ isMuted, isPlaying, error })
@@ -189,10 +199,12 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
 
   render() {
     return <div id={ this.props.id } 
-        ref="frame" 
+        ref={this._refFrame}
         style={{ ...this.props.style }}
         className={`webrtc-player ${this.props.sizing} ${this.props.className}`}>
-      <video ref="video" playsInline autoPlay
+      <video 
+        ref={this._refVideo}
+        playsInline autoPlay
         className={this.props.rotate} 
         style={this.state.videoStyle}
         />

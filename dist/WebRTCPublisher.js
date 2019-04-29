@@ -50,6 +50,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var wowza_webrtc_client_1 = require("wowza-webrtc-client");
+var cameraSourceToConstraints = function (src) {
+    return {
+        audio: true,
+        video: src === 'any' ? true : { facingMode: { exact: src } }
+    };
+};
+var constraintsToCameraSource = function (from) {
+    if (from.video === true) {
+        return 'any';
+    }
+    var json = JSON.stringify(from.video);
+    return /environment/.test(json) ? 'environment' : 'user';
+};
 var WebRTCPublisher = /** @class */ (function (_super) {
     __extends(WebRTCPublisher, _super);
     function WebRTCPublisher(props) {
@@ -57,6 +70,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         // Properties
         // - Assign default values to props.
         _super.call(this, props) || this;
+        _this._localVideoRef = React.createRef();
         // States declaration
         // - No states is required at this point.
         _this.state = {
@@ -66,7 +80,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         // so `statusInvalidated` can be called without bindings.
         _this.statusInvalidated = _this.statusInvalidated.bind(_this);
         // Create WebProducer object.
-        _this.handler = new wowza_webrtc_client_1.WebRTCPublisher(_this.props.config, _this.statusInvalidated);
+        _this.handler = new wowza_webrtc_client_1.WebRTCPublisher(_this.props.config, cameraSourceToConstraints(props.usingCamera), _this.statusInvalidated);
         return _this;
     }
     Object.defineProperty(WebRTCPublisher.prototype, "isPreviewEnabled", {
@@ -83,10 +97,13 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.handler.attachUserMedia(this._localVideoRef)];
+                    case 0:
+                        if (!this.videoElement) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.handler.attachUserMedia(this.videoElement)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/];
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
                 }
             });
         });
@@ -96,8 +113,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!this.isPreviewEnabled) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.handler.attachUserMedia(this._localVideoRef)];
+                        if (!(!this.isPreviewEnabled && this.videoElement)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.handler.attachUserMedia(this.videoElement)];
                     case 1:
                         _a.sent();
                         _a.label = 2;
@@ -114,9 +131,16 @@ var WebRTCPublisher = /** @class */ (function (_super) {
             this.handler.detachUserMedia();
         }
     };
-    Object.defineProperty(WebRTCPublisher.prototype, "_localVideoRef", {
+    WebRTCPublisher.prototype.switchStream = function (cameraSource) {
+        this.handler.switchStream({
+            audio: true,
+            video: { facingMode: { exact: cameraSource } }
+        });
+        this.statusInvalidated();
+    };
+    Object.defineProperty(WebRTCPublisher.prototype, "videoElement", {
         get: function () {
-            return this.refs.localVideo;
+            return this._localVideoRef.current || undefined;
         },
         enumerable: true,
         configurable: true
@@ -125,8 +149,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 // localVideo is now ready (as it is mounted)
-                if (this.state.isCameraReady && this.props.autoPreview) {
-                    this.handler.attachUserMedia(this._localVideoRef);
+                if (this.state.isCameraReady && this.props.autoPreview && this.videoElement) {
+                    this.handler.attachUserMedia(this.videoElement);
                 }
                 return [2 /*return*/];
             });
@@ -147,15 +171,17 @@ var WebRTCPublisher = /** @class */ (function (_super) {
             isHolding: this.handler.isHolding,
             isPublishing: this.handler.isPublishing,
             isPreviewEnabled: this.isPreviewEnabled,
-            publisherError: this.handler.lastError
+            publisherError: this.handler.lastError,
+            usingCamera: constraintsToCameraSource(this.handler.streamSourceConstraints)
         });
     };
     WebRTCPublisher.prototype.render = function () {
-        return (React.createElement("video", { id: this.props.id, className: "webrtc-publisher " + this.props.className + " " + (this.state.isPreviewing ? 'previewing' : '') + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: "localVideo", playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
+        return (React.createElement("video", { id: this.props.id, className: "webrtc-publisher " + this.props.className + " " + (this.state.isPreviewing ? 'previewing' : '') + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: this._localVideoRef, playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
     };
     WebRTCPublisher.defaultProps = {
         trace: true,
-        autoPreview: true
+        autoPreview: true,
+        usingCamera: 'any'
     };
     return WebRTCPublisher;
 }(React.Component));

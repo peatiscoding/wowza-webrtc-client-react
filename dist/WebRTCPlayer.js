@@ -30,6 +30,8 @@ var WebRTCPlayer = /** @class */ (function (_super) {
     __extends(WebRTCPlayer, _super);
     function WebRTCPlayer(props) {
         var _this = _super.call(this, props) || this;
+        _this._refFrame = React.createRef();
+        _this._refVideo = React.createRef();
         _this.state = {
             loadCount: 0,
             isPlaying: false,
@@ -49,14 +51,14 @@ var WebRTCPlayer = /** @class */ (function (_super) {
     });
     Object.defineProperty(WebRTCPlayer.prototype, "videoElement", {
         get: function () {
-            return this.refs.video;
+            return this._refVideo.current || undefined;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(WebRTCPlayer.prototype, "frameElement", {
         get: function () {
-            return this.refs.frame;
+            return this._refFrame.current || undefined;
         },
         enumerable: true,
         configurable: true
@@ -66,14 +68,19 @@ var WebRTCPlayer = /** @class */ (function (_super) {
         this._initPlayer(this.props.autoPlay);
         // register a resize handler.
         this.resizeHandler = function () {
+            var videoElement = _this.videoElement;
+            var frameElement = _this.frameElement;
+            if (!videoElement || !frameElement) {
+                return;
+            }
             //
             var videoSize = {
-                width: _this.videoElement.videoWidth,
-                height: _this.videoElement.videoHeight
+                width: videoElement.videoWidth,
+                height: videoElement.videoHeight
             };
             var frameSize = {
-                width: _this.frameElement.clientWidth,
-                height: _this.frameElement.clientHeight
+                width: frameElement.clientWidth,
+                height: frameElement.clientHeight
             };
             if (!(videoSize.width > 0 && videoSize.height > 0) || !frameSize) {
                 console.log('Bailed on calculation size info is not valid');
@@ -149,6 +156,9 @@ var WebRTCPlayer = /** @class */ (function (_super) {
     };
     WebRTCPlayer.prototype._initPlayer = function (autoPlay) {
         var _this = this;
+        if (!this.videoElement) {
+            return;
+        }
         // Create a new instance
         this.playerInterface = new wowza_webrtc_client_1.WebRTCPlayer(this.props.config, this.videoElement, function (_a) {
             var isMuted = _a.isMuted, isPlaying = _a.isPlaying, error = _a.error;
@@ -172,8 +182,8 @@ var WebRTCPlayer = /** @class */ (function (_super) {
     };
     WebRTCPlayer.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", { id: this.props.id, ref: "frame", style: __assign({}, this.props.style), className: "webrtc-player " + this.props.sizing + " " + this.props.className },
-            React.createElement("video", { ref: "video", playsInline: true, autoPlay: true, className: this.props.rotate, style: this.state.videoStyle }),
+        return React.createElement("div", { id: this.props.id, ref: this._refFrame, style: __assign({}, this.props.style), className: "webrtc-player " + this.props.sizing + " " + this.props.className },
+            React.createElement("video", { ref: this._refVideo, playsInline: true, autoPlay: true, className: this.props.rotate, style: this.state.videoStyle }),
             this.playerInterface && this.state.isMuted &&
                 React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: function () { return _this.playerInterface && (_this.playerInterface.isMuted = false); } },
                     this.props.children,

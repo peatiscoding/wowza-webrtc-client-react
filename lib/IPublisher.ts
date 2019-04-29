@@ -1,3 +1,5 @@
+export type CameraSource = 'user'|'environment'|'any'
+
 export interface IPublisherStatus {
   isHolding: boolean
   isCameraReady: boolean
@@ -6,7 +8,13 @@ export interface IPublisherStatus {
   publisherError: Error|undefined
 }
 
+export interface WebRTCPublisherStatus extends IPublisherStatus {
+  usingCamera: CameraSource
+}
+
 export type IVideoStateChanged = (status: IPublisherStatus) => void
+
+export type WebRTCVideoStateChanged = (status: WebRTCPublisherStatus) => void
 
 export interface IPublisher {
 
@@ -15,8 +23,4 @@ export interface IPublisher {
   tryToConnect(): Promise<void>
 
   disconnect(): void
-}
-
-export interface IPublisherProps {
-  onVideoStateChanged?: IVideoStateChanged    // Video state change listener
 }

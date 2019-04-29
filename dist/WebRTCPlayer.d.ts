@@ -29,6 +29,8 @@ export declare class WebRTCPlayer extends React.Component<Props, State> implemen
     private readonly frameElement;
     private playerInterface?;
     private resizeHandler;
+    private _refFrame;
+    private _refVideo;
     constructor(props: Props);
     componentDidMount(): void;
     componentWillUnmount(): void;
