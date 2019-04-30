@@ -210,7 +210,8 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
         />
       {
         this.playerInterface && this.state.isMuted &&
-        <div className="unmute-blocker d-flex justify-content-center align-items-center" onClick={() => this.playerInterface && (this.playerInterface.isMuted = false) }>
+        <div className="unmute-blocker d-flex justify-content-center align-items-center" 
+            onClick={() => this.playerInterface && (this.playerInterface.isMuted = false) }>
           { this.props.children }
           {
             this.props.showUnmuteButton && 
@@ -220,10 +221,14 @@ export class WebRTCPlayer extends React.Component<Props, State> implements IPlay
       }
       {
         this.state.error &&
-        <div className="unmute-blocker d-flex justify-content-center align-items-center">
+        <div className="unmute-blocker d-flex justify-content-center align-items-center"
+            onClick={this.play.bind(this)}>
           {
             this.props.showErrorOverlay &&
-            <p className="text-danger text-center">{`${this.state.error.message}`}<br/>Tap to retry.</p>
+            <p className="text-danger text-center">
+              {`${this.state.error.message}`}<br/><br/>
+              <button className="btn btn-danger"><i className="fas redo-alt"></i> TAP TO RETRY</button>
+            </p>
           }
         </div>
       }

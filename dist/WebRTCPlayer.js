@@ -192,10 +192,13 @@ var WebRTCPlayer = /** @class */ (function (_super) {
                             React.createElement("i", { className: "fas fa-volume-mute" }),
                             " TAP TO UNMUTE")),
             this.state.error &&
-                React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center" }, this.props.showErrorOverlay &&
+                React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: this.play.bind(this) }, this.props.showErrorOverlay &&
                     React.createElement("p", { className: "text-danger text-center" }, "" + this.state.error.message,
                         React.createElement("br", null),
-                        "Tap to retry.")));
+                        React.createElement("br", null),
+                        React.createElement("button", { className: "btn btn-danger" },
+                            React.createElement("i", { className: "fas redo-alt" }),
+                            " TAP TO RETRY"))));
     };
     WebRTCPlayer.defaultProps = {
         disableAudio: false,
