@@ -10,11 +10,13 @@ interface Props {
     autoPreview: boolean;
     config: WebRTCConfiguration;
     usingCamera: CameraSource;
+    showErrorOverlay: boolean;
     onVideoStateChanged?: WebRTCVideoStateChanged;
 }
 interface State {
     isCameraReady: boolean;
     isPreviewing: boolean;
+    publisherError: Error | undefined;
 }
 export declare class WebRTCPublisher extends React.Component<Props, State> implements IPublisher {
     static defaultProps: Partial<Props>;

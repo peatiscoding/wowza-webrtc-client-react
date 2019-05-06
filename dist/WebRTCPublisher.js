@@ -12,6 +12,17 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -75,7 +86,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         // - No states is required at this point.
         _this.state = {
             isCameraReady: false,
-            isPreviewing: false
+            isPreviewing: false,
+            publisherError: undefined
         };
         // so `statusInvalidated` can be called without bindings.
         _this.statusInvalidated = _this.statusInvalidated.bind(_this);
@@ -163,7 +175,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         // Update local states
         this.setState({
             isCameraReady: !this.handler.isCameraMuted,
-            isPreviewing: this.handler.isPreviewEnabled
+            isPreviewing: this.handler.isPreviewEnabled,
+            publisherError: this.handler.lastError
         });
         // dispatch update to exterior state handler
         this.props.onVideoStateChanged && this.props.onVideoStateChanged({
@@ -176,11 +189,21 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         });
     };
     WebRTCPublisher.prototype.render = function () {
-        return (React.createElement("video", { id: this.props.id, className: "webrtc-publisher " + this.props.className + " " + (this.state.isPreviewing ? 'previewing' : '') + " " + (this.state.isCameraReady ? '' : 'disabled'), ref: this._localVideoRef, playsInline: true, muted: true, controls: false, autoPlay: true, style: this.props.style }));
+        return React.createElement("div", { className: "webrtc-publisher " + this.props.className + " " + (this.state.isPreviewing ? 'previewing' : '') + " " + (this.state.isCameraReady ? '' : 'disabled') },
+            React.createElement("video", { id: this.props.id, ref: this._localVideoRef, playsInline: true, muted: true, controls: false, autoPlay: true, style: __assign({ height: '100%', width: '100%' }, this.props.style) }),
+            this.state.publisherError &&
+                React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: this.tryToConnect.bind(this) }, this.props.showErrorOverlay &&
+                    React.createElement("p", { className: "text-danger text-center" }, "" + this.state.publisherError.message,
+                        React.createElement("br", null),
+                        React.createElement("br", null),
+                        React.createElement("button", { className: "btn btn-danger" },
+                            React.createElement("i", { className: "fas redo-alt" }),
+                            " TAP TO RECONNECT"))));
     };
     WebRTCPublisher.defaultProps = {
         trace: true,
         autoPreview: true,
+        showErrorOverlay: true,
         usingCamera: 'any'
     };
     return WebRTCPublisher;

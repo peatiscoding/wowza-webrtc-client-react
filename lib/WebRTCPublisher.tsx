@@ -26,12 +26,14 @@ interface Props {
   autoPreview: boolean              // start preview when tryToConnect(), stop preview on disconnect()
   config: WebRTCConfiguration
   usingCamera: CameraSource
+  showErrorOverlay: boolean
   onVideoStateChanged?: WebRTCVideoStateChanged
 }
 
 interface State {
   isCameraReady: boolean
   isPreviewing: boolean
+  publisherError: Error|undefined
 }
 
 export class WebRTCPublisher extends React.Component<Props, State> implements IPublisher {
@@ -39,6 +41,7 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
   public static defaultProps: Partial<Props> = {
     trace: true,
     autoPreview: true,
+    showErrorOverlay: true,
     usingCamera: 'any'
   }
 
@@ -95,7 +98,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     // - No states is required at this point.
     this.state = {
       isCameraReady: false,
-      isPreviewing: false
+      isPreviewing: false,
+      publisherError: undefined
     }
 
     // so `statusInvalidated` can be called without bindings.
@@ -124,7 +128,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     // Update local states
     this.setState({
       isCameraReady: !this.handler.isCameraMuted,
-      isPreviewing: this.handler.isPreviewEnabled
+      isPreviewing: this.handler.isPreviewEnabled,
+      publisherError: this.handler.lastError
     })
     // dispatch update to exterior state handler
     this.props.onVideoStateChanged && this.props.onVideoStateChanged({
@@ -138,16 +143,28 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
   }
 
   render() {
-    return (
+    return <div className={`webrtc-publisher ${this.props.className} ${this.state.isPreviewing ? 'previewing': '' } ${this.state.isCameraReady ? '' : 'disabled'}`}>
       <video 
         id={this.props.id}
-        className={`webrtc-publisher ${this.props.className} ${this.state.isPreviewing ? 'previewing': '' } ${this.state.isCameraReady ? '' : 'disabled'}`}
         ref={this._localVideoRef}
         playsInline={true}
         muted={true}
         controls={false}
         autoPlay={true}
-        style={this.props.style} />
-    );
+        style={{height: '100%', width: '100%', ...this.props.style}} />
+      {
+        this.state.publisherError &&
+        <div className="unmute-blocker d-flex justify-content-center align-items-center"
+            onClick={this.tryToConnect.bind(this)}>
+          {
+            this.props.showErrorOverlay &&
+            <p className="text-danger text-center">
+              {`${this.state.publisherError.message}`}<br/><br/>
+              <button className="btn btn-danger"><i className="fas redo-alt"></i> TAP TO RECONNECT</button>
+            </p>
+          }
+        </div>
+      }
+    </div>
   }
 }
