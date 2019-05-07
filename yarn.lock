@@ -79,9 +79,9 @@ typescript@^3.3.3333:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
   integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
 
-wowza-webrtc-client@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/wowza-webrtc-client/-/wowza-webrtc-client-0.0.8.tgz#96319e9a7a5af0f23f43288a931c663487579d20"
-  integrity sha512-g0mTaFX8PoM9GK6egLT8JHJEN0F55NTv2fn3P7J4ixG1TVZd1lUMT26dwp/F46nFl7yRwqRD5MGTiN84AKASMQ==
+wowza-webrtc-client@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/wowza-webrtc-client/-/wowza-webrtc-client-0.0.10.tgz#054ecf929222bb6517948d117274c4b19ea72ac9"
+  integrity sha512-p7SHg1adhh/7FUekTZpRrwI5g7XfWK0x5eZD82wmMQ3vukWZ5/9ctgcpiMtYo5qTmlDQIlyyFohJZEnCzypJ+A==
   dependencies:
     lodash "^4.17.11"
