@@ -11,6 +11,7 @@ interface Props {
     config: WebRTCConfiguration;
     usingCamera: CameraSource;
     showErrorOverlay: boolean;
+    enhanceMode: 'auto' | boolean;
     onVideoStateChanged?: WebRTCVideoStateChanged;
 }
 interface State {
@@ -30,6 +31,7 @@ export declare class WebRTCPublisher extends React.Component<Props, State> imple
     switchStream(cameraSource: CameraSource): void;
     private readonly videoElement;
     constructor(props: Props);
+    componentDidUpdate(prevProps: Props): void;
     componentDidMount(): Promise<void>;
     hold(hold: boolean): void;
     private statusInvalidated;

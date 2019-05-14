@@ -1,6 +1,6 @@
 {
   "name": "wowza-webrtc-client-react",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "description": "WoWza WebRTC Player/Client (React Component).",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -17,11 +17,11 @@
     "url": "git+https://github.com/peatiscoding/wowza-webrtc-client-react"
   },
   "devDependencies": {
-    "@types/react": "^16.8.8",
+    "@types/react": "^16.8.17",
     "react": "^16.8.4",
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "wowza-webrtc-client": "^0.0.11"
+    "wowza-webrtc-client": "0.0.14"
   }
 }

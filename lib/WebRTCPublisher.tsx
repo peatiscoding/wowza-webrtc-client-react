@@ -27,6 +27,7 @@ interface Props {
   config: WebRTCConfiguration
   usingCamera: CameraSource
   showErrorOverlay: boolean
+  enhanceMode: 'auto'|boolean
   onVideoStateChanged?: WebRTCVideoStateChanged
 }
 
@@ -42,7 +43,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     trace: true,
     autoPreview: true,
     showErrorOverlay: true,
-    usingCamera: 'any'
+    usingCamera: 'any',
+    enhanceMode: 'auto'
   }
 
   private _localVideoRef = React.createRef<HTMLVideoElement>()
@@ -109,8 +111,16 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     this.handler = new PublisherHandler(
       this.props.config,
       cameraSourceToConstraints(props.usingCamera),
+      this.props.enhanceMode,
       this.statusInvalidated
     )
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    // Keep enhance mode up-to-date.
+    if (this.props.enhanceMode !== prevProps.enhanceMode) {
+      this.handler.enhanceMode = this.props.enhanceMode
+    }
   }
 
   async componentDidMount() {
