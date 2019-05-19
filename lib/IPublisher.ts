@@ -18,9 +18,9 @@ export type WebRTCVideoStateChanged = (status: WebRTCPublisherStatus) => void
 
 export interface IPublisher {
 
-  hold(value: Boolean): void
+  hold(value: boolean): void
 
-  tryToConnect(): Promise<void>
+  publish(streamName: string): Promise<void>
 
   disconnect(): void
 }

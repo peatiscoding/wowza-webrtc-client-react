@@ -87,7 +87,8 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         _this.state = {
             isCameraReady: false,
             isPreviewing: false,
-            publisherError: undefined
+            publisherError: undefined,
+            streamName: undefined
         };
         // so `statusInvalidated` can be called without bindings.
         _this.statusInvalidated = _this.statusInvalidated.bind(_this);
@@ -120,18 +121,20 @@ var WebRTCPublisher = /** @class */ (function (_super) {
             });
         });
     };
-    WebRTCPublisher.prototype.tryToConnect = function () {
+    WebRTCPublisher.prototype.publish = function (streamName) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        this.setState({ streamName: streamName });
                         if (!(!this.isPreviewEnabled && this.videoElement)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.handler.attachUserMedia(this.videoElement)];
                     case 1:
                         _a.sent();
                         _a.label = 2;
-                    case 2:
-                        this.handler.connect(this.props.streamName);
+                    case 2: return [4 /*yield*/, this.handler.connect(streamName)];
+                    case 3:
+                        _a.sent();
                         return [2 /*return*/];
                 }
             });
@@ -142,6 +145,9 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         if (this.isPreviewEnabled && this.props.autoPreview) {
             this.handler.detachUserMedia();
         }
+        this.setState({
+            streamName: undefined
+        });
     };
     WebRTCPublisher.prototype.switchStream = function (cameraSource) {
         this.handler.switchStream({
@@ -177,6 +183,18 @@ var WebRTCPublisher = /** @class */ (function (_super) {
     WebRTCPublisher.prototype.hold = function (hold) {
         this.handler.isHolding = hold;
     };
+    /**
+     * connect method invoke from within Publisher component built-in UI.
+     */
+    WebRTCPublisher.prototype.retry = function () {
+        var streamName = this.state.streamName;
+        if (!streamName) {
+            return;
+        }
+        this.publish(streamName).catch(function (error) {
+            console.error('Failed to re-connect stream', error);
+        });
+    };
     WebRTCPublisher.prototype.statusInvalidated = function () {
         // Update local states
         this.setState({
@@ -198,7 +216,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         return React.createElement("div", { className: "webrtc-publisher " + this.props.className + " " + (this.state.isPreviewing ? 'previewing' : '') + " " + (this.state.isCameraReady ? '' : 'disabled') },
             React.createElement("video", { id: this.props.id, ref: this._localVideoRef, playsInline: true, muted: true, controls: false, autoPlay: true, style: __assign({ height: '100%', width: '100%' }, this.props.style) }),
             this.state.publisherError &&
-                React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: this.tryToConnect.bind(this) }, this.props.showErrorOverlay &&
+                React.createElement("div", { className: "unmute-blocker d-flex justify-content-center align-items-center", onClick: this.retry.bind(this) }, this.state.streamName && this.props.showErrorOverlay &&
                     React.createElement("p", { className: "text-danger text-center" }, "" + this.state.publisherError.message,
                         React.createElement("br", null),
                         React.createElement("br", null),

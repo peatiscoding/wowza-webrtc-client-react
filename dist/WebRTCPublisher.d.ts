@@ -5,7 +5,6 @@ interface Props {
     id: string;
     style?: React.CSSProperties;
     trace?: boolean;
-    streamName: string;
     className?: string;
     autoPreview: boolean;
     config: WebRTCConfiguration;
@@ -15,6 +14,7 @@ interface Props {
     onVideoStateChanged?: WebRTCVideoStateChanged;
 }
 interface State {
+    streamName?: string;
     isCameraReady: boolean;
     isPreviewing: boolean;
     publisherError: Error | undefined;
@@ -26,7 +26,7 @@ export declare class WebRTCPublisher extends React.Component<Props, State> imple
     readonly isPreviewEnabled: boolean;
     stopPreview(): void;
     startPreview(): Promise<void>;
-    tryToConnect(): Promise<void>;
+    publish(streamName: string): Promise<void>;
     disconnect(): void;
     switchStream(cameraSource: CameraSource): void;
     private readonly videoElement;
@@ -34,6 +34,10 @@ export declare class WebRTCPublisher extends React.Component<Props, State> imple
     componentDidUpdate(prevProps: Props): void;
     componentDidMount(): Promise<void>;
     hold(hold: boolean): void;
+    /**
+     * connect method invoke from within Publisher component built-in UI.
+     */
+    private retry;
     private statusInvalidated;
     render(): JSX.Element;
 }

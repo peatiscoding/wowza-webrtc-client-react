@@ -12,7 +12,7 @@ export interface WebRTCPublisherStatus extends IPublisherStatus {
 export declare type IVideoStateChanged = (status: IPublisherStatus) => void;
 export declare type WebRTCVideoStateChanged = (status: WebRTCPublisherStatus) => void;
 export interface IPublisher {
-    hold(value: Boolean): void;
-    tryToConnect(): Promise<void>;
+    hold(value: boolean): void;
+    publish(streamName: string): Promise<void>;
     disconnect(): void;
 }

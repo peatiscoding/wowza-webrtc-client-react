@@ -21,7 +21,6 @@ interface Props {
   id: string,                       // Html DOM's id
   style?: React.CSSProperties,      // Html CSS Properties
   trace?: boolean                   // Enable Logs in Console?
-  streamName: string                // Publishing stream name
   className?: string
   autoPreview: boolean              // start preview when tryToConnect(), stop preview on disconnect()
   config: WebRTCConfiguration
@@ -32,6 +31,7 @@ interface Props {
 }
 
 interface State {
+  streamName?: string               // Publishing stream name
   isCameraReady: boolean
   isPreviewing: boolean
   publisherError: Error|undefined
@@ -65,11 +65,12 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     }
   }
 
-  public async tryToConnect(): Promise<void> {
+  public async publish(streamName: string): Promise<void> {
+    this.setState({ streamName })
     if (!this.isPreviewEnabled && this.videoElement) {
       await this.handler.attachUserMedia(this.videoElement)
     }
-    this.handler.connect(this.props.streamName)
+    await this.handler.connect(streamName)
   }
 
   public disconnect() {
@@ -77,6 +78,9 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     if (this.isPreviewEnabled && this.props.autoPreview) {
       this.handler.detachUserMedia()
     }
+    this.setState({
+      streamName: undefined
+    })
   }
 
   public switchStream(cameraSource: CameraSource) {
@@ -101,7 +105,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     this.state = {
       isCameraReady: false,
       isPreviewing: false,
-      publisherError: undefined
+      publisherError: undefined,
+      streamName: undefined
     }
 
     // so `statusInvalidated` can be called without bindings.
@@ -132,6 +137,19 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
 
   public hold(hold: boolean) {
     this.handler.isHolding = hold
+  }
+
+  /**
+   * connect method invoke from within Publisher component built-in UI.
+   */
+  private retry() {
+    const streamName = this.state.streamName
+    if (!streamName) {
+      return
+    }
+    this.publish(streamName).catch(error => {
+      console.error('Failed to re-connect stream', error)
+    })
   }
 
   private statusInvalidated() {
@@ -165,9 +183,9 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
       {
         this.state.publisherError &&
         <div className="unmute-blocker d-flex justify-content-center align-items-center"
-            onClick={this.tryToConnect.bind(this)}>
+            onClick={this.retry.bind(this)}>
           {
-            this.props.showErrorOverlay &&
+            this.state.streamName && this.props.showErrorOverlay &&
             <p className="text-danger text-center">
               {`${this.state.publisherError.message}`}<br/><br/>
               <button className="btn btn-danger"><i className="fas redo-alt"></i> TAP TO RECONNECT</button>
