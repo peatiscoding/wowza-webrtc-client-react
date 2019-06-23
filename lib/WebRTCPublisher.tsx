@@ -27,6 +27,7 @@ interface Props {
   usingCamera: CameraSource
   showErrorOverlay: boolean
   enhanceMode: 'auto'|boolean
+  videoCodec: 'H264'|'VPX'
   onVideoStateChanged?: WebRTCVideoStateChanged
 }
 
@@ -44,6 +45,7 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
     autoPreview: true,
     showErrorOverlay: true,
     usingCamera: 'any',
+    videoCodec: 'H264',
     enhanceMode: 'auto'
   }
 
@@ -117,6 +119,7 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
       this.props.config,
       cameraSourceToConstraints(props.usingCamera),
       this.props.enhanceMode,
+      this.props.videoCodec,
       this.statusInvalidated
     )
   }

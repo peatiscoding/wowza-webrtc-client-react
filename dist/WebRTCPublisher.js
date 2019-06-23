@@ -93,7 +93,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         // so `statusInvalidated` can be called without bindings.
         _this.statusInvalidated = _this.statusInvalidated.bind(_this);
         // Create WebProducer object.
-        _this.handler = new wowza_webrtc_client_1.WebRTCPublisher(_this.props.config, cameraSourceToConstraints(props.usingCamera), _this.props.enhanceMode, _this.statusInvalidated);
+        _this.handler = new wowza_webrtc_client_1.WebRTCPublisher(_this.props.config, cameraSourceToConstraints(props.usingCamera), _this.props.enhanceMode, _this.props.videoCodec, _this.statusInvalidated);
         return _this;
     }
     Object.defineProperty(WebRTCPublisher.prototype, "isPreviewEnabled", {
@@ -229,6 +229,7 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         autoPreview: true,
         showErrorOverlay: true,
         usingCamera: 'any',
+        videoCodec: 'H264',
         enhanceMode: 'auto'
     };
     return WebRTCPublisher;

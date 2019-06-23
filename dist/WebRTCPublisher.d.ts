@@ -11,6 +11,7 @@ interface Props {
     usingCamera: CameraSource;
     showErrorOverlay: boolean;
     enhanceMode: 'auto' | boolean;
+    videoCodec: 'H264' | 'VPX';
     onVideoStateChanged?: WebRTCVideoStateChanged;
 }
 interface State {
