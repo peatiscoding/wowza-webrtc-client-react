@@ -152,7 +152,11 @@ var WebRTCPublisher = /** @class */ (function (_super) {
     WebRTCPublisher.prototype.switchStream = function (cameraSource) {
         this.handler.switchStream({
             audio: true,
-            video: { facingMode: { exact: cameraSource } }
+            video: {
+                facingMode: {
+                    ideal: cameraSource
+                }
+            }
         });
         this.statusInvalidated();
     };

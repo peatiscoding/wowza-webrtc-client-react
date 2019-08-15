@@ -88,7 +88,11 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
   public switchStream(cameraSource: CameraSource) {
     this.handler.switchStream({
       audio: true,
-      video: { facingMode: { exact: cameraSource } }
+      video: {
+        facingMode: {
+          ideal: cameraSource
+        }
+      }
     })
     this.statusInvalidated()
   }
