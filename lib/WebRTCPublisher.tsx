@@ -53,8 +53,8 @@ export class WebRTCPublisher extends React.Component<Props, State> implements IP
 
   private handler!: PublisherHandler
 
-  private reconfigure(config: WebRTCConfiguration) {
-    this.handler.reconfigure(config)
+  public reconfig(config: WebRTCConfiguration) {
+    this.handler.reconfig(config)
   }
 
   public get isPreviewEnabled(): boolean {
