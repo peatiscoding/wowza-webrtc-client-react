@@ -96,6 +96,9 @@ var WebRTCPublisher = /** @class */ (function (_super) {
         _this.handler = new wowza_webrtc_client_1.WebRTCPublisher(_this.props.config, cameraSourceToConstraints(props.usingCamera), _this.props.enhanceMode, _this.props.videoCodec, _this.statusInvalidated);
         return _this;
     }
+    WebRTCPublisher.prototype.reconfig = function (config) {
+        this.handler.reconfig(config);
+    };
     Object.defineProperty(WebRTCPublisher.prototype, "isPreviewEnabled", {
         get: function () {
             return this.state.isPreviewing;

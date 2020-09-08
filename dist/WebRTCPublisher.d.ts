@@ -24,6 +24,7 @@ export declare class WebRTCPublisher extends React.Component<Props, State> imple
     static defaultProps: Partial<Props>;
     private _localVideoRef;
     private handler;
+    reconfig(config: WebRTCConfiguration): void;
     readonly isPreviewEnabled: boolean;
     stopPreview(): void;
     startPreview(): Promise<void>;

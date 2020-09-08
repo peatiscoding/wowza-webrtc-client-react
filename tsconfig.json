@@ -10,7 +10,8 @@
     "strict": true,
     "noImplicitAny": false,
     "jsx": "react",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "skipLibCheck": true
   },
   "include": [
     "./lib/**/*.tsx",
