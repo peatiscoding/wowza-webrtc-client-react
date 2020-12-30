@@ -22,6 +22,6 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "wowza-webrtc-client": "0.0.24"
+    "wowza-webrtc-client": "0.0.25"
   }
 }
